@@ -3,7 +3,7 @@ export const configuratorState = {
     flavors: [],
 
     selectedBase: null,
-    selectedFlavors: [],
+    selectedFlavors: null,
 
     customFlavorName: "",
     customFlavorColor: "#a9d4f5",

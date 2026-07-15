@@ -12,10 +12,11 @@ import {
     createScoopFromModel,
     createScoopFromConeFile,
     hideOriginalScoop,
-    placeScoopOnBase
-    } from "./scoopManager.js";
+    placeScoopOnBase,
+    setScoopColor
+} from "./scoopManager.js";
 
-    const hideCupDecorations = (model) => {
+const hideCupDecorations = (model) => {
     model.traverse((child) => {
         if (!child.isMesh) {
         return;
@@ -189,13 +190,26 @@ export const showBaseModel = async ({
         );
 
         configurationModel.traverse((child) => {
-        if (!child.isMesh) {
-            return;
-        }
+            if (!child.isMesh) {
+                return;
+            }
 
-        child.castShadow = true;
-        child.receiveShadow = true;
+            child.castShadow = true;
+            child.receiveShadow = true;
         });
+
+        if (state.currentScoop) {
+            const color =
+                state.selectedFlavor?.color ||
+                state.customFlavorColor;
+
+            if (color) {
+                setScoopColor(
+                state.currentScoop,
+                color
+                );
+            }
+        }
 
         scene.add(configurationModel);
 
