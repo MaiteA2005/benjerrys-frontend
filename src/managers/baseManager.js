@@ -1,117 +1,133 @@
-import * as THREE from "three";
 import { loadModel } from "../loaders/modelLoader.js";
+import {
+    centerAndScaleModel,
+    disposeObject
+} from "../utils/modelUtils.js";
 
-export const removeCurrentModel = (scene, state) => {
-    if (!state.currentModel) {
-        return;
-    }
+const hideCupCherry = (model) => {
+    model.traverse((child) => {
+        if (!child.isMesh) return;
 
-    scene.remove(state.currentModel);
+        const name = child.name.toLowerCase();
 
-    state.currentModel.traverse((child) => {
-        if (!child.isMesh) {
-        return;
-        }
-
-        child.geometry?.dispose();
-
-        if (Array.isArray(child.material)) {
-        child.material.forEach((material) => {
-            material.dispose();
-        });
-        } else {
-        child.material?.dispose();
+        // Cherry verwijderen
+        if (name.includes("cherry")) {
+            child.visible = false;
         }
     });
-
-    state.currentModel = null;
 };
 
-const centerAndScaleModel = (model, baseType) => {
-    const initialBox = new THREE.Box3().setFromObject(model);
-    const initialSize = initialBox.getSize(new THREE.Vector3());
+const hideConeSprinkles = (model) => {
+    model.traverse((child) => {
+        if (!child.isMesh) return;
 
-    const maxDimension = Math.max(
-        initialSize.x,
-        initialSize.y,
-        initialSize.z
-    );
+        // Rode sprinkles verbergen
+        if (
+            child.name === "IceCream_3_2" ||
+            child.material?.name === "Red"
+        ) {
+            child.visible = false;
+        }
+    });
+};
 
-    if (maxDimension === 0) {
-        console.warn("Het model heeft geen geldige afmetingen.");
+export const removeCurrentBase = (scene, state) => {
+    if (!state.currentBaseModel) {
         return;
     }
 
-    const settings = {
-        cone: {
-        targetSize: 2.8,
-        offsetY: 0
-        },
-        cup: {
-        targetSize: 1.8,
-        offsetY: 0.15
+    scene.remove(state.currentBaseModel);
+    disposeObject(state.currentBaseModel);
+
+    state.currentBaseModel = null;
+};
+
+const adjustMaterials = (model, baseType) => {
+    model.traverse((child) => {
+        if (!child.isMesh || !child.material) {
+            return;
         }
-    };
 
-    const currentSettings = settings[baseType] || {
-        targetSize: 2.5,
-        offsetY: 0
-    };
+        const materials = Array.isArray(child.material)
+            ? child.material
+            : [child.material];
 
-    const scale = currentSettings.targetSize / maxDimension;
+        materials.forEach((material) => {
+            material.metalness = 0;
 
-    model.scale.setScalar(scale);
-    model.updateMatrixWorld(true);
+            if (baseType === "cone") {
+                material.roughness = 0.85;
 
-    const scaledBox = new THREE.Box3().setFromObject(model);
-    const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+                if (material.color) {
+                    material.color.multiplyScalar(1.15);
+                }
+            }
 
-    model.position.set(
-        -scaledCenter.x,
-        -scaledCenter.y + currentSettings.offsetY,
-        -scaledCenter.z
-    );
+            if (baseType === "cup") {
+                material.roughness = 1;
 
-    model.updateMatrixWorld(true);
+                if (material.color) {
+                    material.color.multiplyScalar(0.72);
+                }
+            }
+
+            material.needsUpdate = true;
+        });
+    });
 };
 
 export const showBaseModel = async ({
     scene,
     state,
     base
-    }) => {
+}) => {
     try {
         console.log("Gekozen basis:", base);
         console.log("Model laden vanaf:", base.modelUrl);
 
-        removeCurrentModel(scene, state);
+        removeCurrentBase(scene, state);
 
         const model = await loadModel(base.modelUrl);
 
-        model.traverse((child) => {
-            if (child.isMesh) {
-                console.log({
-                name: child.name,
-                material: child.material?.name,
-                position: child.position
-                });
-            }
-        });
+        adjustMaterials(model, base.type);
 
-        centerAndScaleModel(model, base.type);
-
-        model.traverse((child) => {
-        if (!child.isMesh) {
-            return;
+        if (base.type === "cone") {
+            hideConeSprinkles(model);
         }
 
-        child.castShadow = true;
-        child.receiveShadow = true;
+        if (base.type === "cup") {
+            hideCupCherry(model);
+        }
+
+        const settings = {
+            cone: {
+                targetSize: 2.8,
+                offsetY: 0
+            },
+            cup: {
+                targetSize: 1.8,
+                offsetY: 0.15
+            }
+        };
+
+        centerAndScaleModel(
+            model,
+            settings[base.type] || {
+                targetSize: 2.5,
+                offsetY: 0
+            }
+        );
+
+        model.traverse((child) => {
+            if (!child.isMesh) return;
+
+            child.castShadow = true;
+            child.receiveShadow = true;
         });
 
         scene.add(model);
 
-        state.currentModel = model;
+        state.currentBaseModel = model;
         state.selectedBase = base;
 
         console.log("Model succesvol toegevoegd:", model);
@@ -119,8 +135,8 @@ export const showBaseModel = async ({
         return model;
     } catch (error) {
         console.error(
-        `Model laden mislukt: ${base.modelUrl}`,
-        error
+            `Model laden mislukt: ${base.modelUrl}`,
+            error
         );
 
         throw error;
