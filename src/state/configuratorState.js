@@ -5,6 +5,7 @@ export const configuratorState = {
     selectedBase: null,
     selectedFlavors: [],
 
-    currentModel: null,
+    currentBaseModel: null,
+    scoopTemplate: null,
     scoopMeshes: []
 };

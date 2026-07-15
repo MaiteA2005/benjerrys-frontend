@@ -1,12 +1,30 @@
 import * as THREE from "three";
 
 export const addLights = (scene) => {
-    const ambientLight = new THREE.AmbientLight("#ffffff", 1.5);
-    scene.add(ambientLight);
+    const hemisphereLight = new THREE.HemisphereLight(
+        0xffffff,
+        0xb7c9d6,
+        1.4
+    );
 
-    const directionalLight = new THREE.DirectionalLight("#ffffff", 2);
-    directionalLight.position.set(3, 5, 4);
-    directionalLight.castShadow = true;
+    const keyLight = new THREE.DirectionalLight(
+        0xffffff,
+        2.2
+    );
 
-    scene.add(directionalLight);
+    keyLight.position.set(4, 6, 5);
+    keyLight.castShadow = true;
+
+    const fillLight = new THREE.DirectionalLight(
+        0xffffff,
+        0.7
+    );
+
+    fillLight.position.set(-4, 3, 2);
+
+    scene.add(
+        hemisphereLight,
+        keyLight,
+        fillLight
+    );
 };
