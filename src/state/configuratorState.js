@@ -5,7 +5,9 @@ export const configuratorState = {
     selectedBase: null,
     selectedFlavors: [],
 
+    customFlavorName: "",
+    customFlavorColor: "#a9d4f5",
+
     currentBaseModel: null,
-    scoopTemplate: null,
-    scoopMeshes: []
+    currentScoop: null
 };
