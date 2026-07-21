@@ -28,6 +28,11 @@ import {
 } from "./managers/flavorManager.js";
 
 import {
+  addExtraScoop,
+  removeExtraScoop
+} from "./managers/scoopManager.js";
+
+import {
   createBaseControls,
   createFlavorDropdown,
   createCustomFlavorControls,
@@ -304,6 +309,15 @@ const loadConfigurator = async () => {
           base
         });
 
+        if (configuratorState.extraFlavor) {
+          await addExtraScoop({
+            scene,
+            state: configuratorState,
+            flavor:
+              configuratorState.extraFlavor
+          });
+        }
+
         updateSummary();
       }
     });
@@ -347,14 +361,24 @@ const loadConfigurator = async () => {
     createExtraFlavorControls({
       flavors,
 
-      onAddFlavor: (flavor) => {
+      onAddFlavor: async (flavor) => {
         configuratorState.extraFlavor =
           flavor;
+
+        await addExtraScoop({
+          scene,
+          state: configuratorState,
+          flavor
+        });
 
         updateSummary();
       },
 
       onRemoveFlavor: () => {
+        removeExtraScoop(
+          configuratorState
+        );
+
         configuratorState.extraFlavor =
           null;
 

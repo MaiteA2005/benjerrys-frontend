@@ -10,5 +10,6 @@ export const configuratorState = {
     customFlavorColor: "#edb8cc",
 
     currentBaseModel: null,
-    currentScoop: null
+    currentScoop: null,
+    extraScoop: null
 };

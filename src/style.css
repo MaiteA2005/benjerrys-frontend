@@ -374,6 +374,19 @@ button {
   color: #b42318;
 }
 
+.extra-flavor-block {
+  padding-top: 4px;
+}
+
+.extra-flavor-container:not([hidden]) {
+  display: block;
+  margin-top: 16px;
+}
+
+.extra-flavor-container[hidden] {
+  display: none;
+}
+
 @media (max-width: 850px) {
   .configurator {
     grid-template-columns: 1fr;

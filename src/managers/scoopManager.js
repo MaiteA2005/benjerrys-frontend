@@ -122,3 +122,117 @@ export const placeScoopOnBase = ({
 
     scoop.updateMatrixWorld(true);
 };
+
+const disposeScoop = (scoop) => {
+    scoop.geometry?.dispose();
+
+    const materials = Array.isArray(scoop.material)
+        ? scoop.material
+        : [scoop.material];
+
+    materials.forEach((material) => {
+        material?.dispose();
+    });
+};
+
+export const removeExtraScoop = (state) => {
+    if (!state.extraScoop) {
+        return;
+    }
+
+    state.extraScoop.removeFromParent();
+    disposeScoop(state.extraScoop);
+
+    state.extraScoop = null;
+};
+
+export const addExtraScoop = async ({
+    scene,
+    state,
+    flavor
+    }) => {
+    if (
+        !state.currentBaseModel ||
+        !state.currentScoop
+    ) {
+        console.warn(
+        "Er is nog geen basis of eerste ijsbol geladen."
+        );
+
+        return null;
+    }
+
+    removeExtraScoop(state);
+
+    const extraScoop =
+        await createScoopFromConeFile();
+
+    setScoopColor(
+        extraScoop,
+        flavor.color
+    );
+
+    state.currentBaseModel.updateMatrixWorld(true);
+    state.currentScoop.updateMatrixWorld(true);
+
+    const firstBox = new THREE.Box3().setFromObject(
+        state.currentScoop
+    );
+
+    const firstCenter = firstBox.getCenter(
+        new THREE.Vector3()
+    );
+
+    const firstSize = firstBox.getSize(
+        new THREE.Vector3()
+    );
+
+    extraScoop.updateMatrixWorld(true);
+
+    const originalExtraBox =
+        new THREE.Box3().setFromObject(extraScoop);
+
+    const originalExtraSize =
+        originalExtraBox.getSize(
+        new THREE.Vector3()
+        );
+
+    const targetWidth =
+        firstSize.x * 0.92;
+
+    const scale =
+        targetWidth / originalExtraSize.x;
+
+    extraScoop.scale.setScalar(scale);
+    extraScoop.updateMatrixWorld(true);
+
+    const scaledExtraBox =
+        new THREE.Box3().setFromObject(extraScoop);
+
+    const scaledExtraSize =
+        scaledExtraBox.getSize(
+        new THREE.Vector3()
+        );
+
+    const overlap =
+        firstSize.y * 0.50;
+
+    const worldPosition = new THREE.Vector3(
+        firstCenter.x,
+        firstBox.max.y +
+        scaledExtraSize.y / 2 -
+        overlap,
+        firstCenter.z
+    );
+
+    scene.add(extraScoop);
+
+    extraScoop.position.copy(worldPosition);
+    extraScoop.updateMatrixWorld(true);
+
+    state.currentBaseModel.attach(extraScoop);
+
+    state.extraScoop = extraScoop;
+
+    return extraScoop;
+};
