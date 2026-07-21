@@ -168,8 +168,70 @@ export const createCustomFlavorControls = ({
     colorInput.addEventListener("input", emitChange);
 };
 
+const showCollapsedPrimaryFlavor = (flavor) => {
+    const selectWrapper = document.querySelector(
+        "#primary-flavor-select-wrapper"
+    );
+
+    const summary = document.querySelector(
+        "#primary-flavor-summary"
+    );
+
+    const summaryColor = document.querySelector(
+        "#primary-flavor-summary-color"
+    );
+
+    const summaryName = document.querySelector(
+        "#primary-flavor-summary-name"
+    );
+
+    const summaryPrice = document.querySelector(
+        "#primary-flavor-summary-price"
+    );
+
+    if (
+        !selectWrapper ||
+        !summary ||
+        !summaryColor ||
+        !summaryName ||
+        !summaryPrice
+    ) {
+        return;
+    }
+
+    selectWrapper.hidden = true;
+    summary.hidden = false;
+
+    summaryColor.style.backgroundColor =
+        flavor.color;
+
+    summaryName.textContent =
+        flavor.name;
+
+    summaryPrice.textContent =
+        formatPrice(flavor.price);
+};
+
+const showEditablePrimaryFlavor = () => {
+    const selectWrapper = document.querySelector(
+        "#primary-flavor-select-wrapper"
+    );
+
+    const summary = document.querySelector(
+        "#primary-flavor-summary"
+    );
+
+    if (!selectWrapper || !summary) {
+        return;
+    }
+
+    selectWrapper.hidden = false;
+    summary.hidden = true;
+};
+
 export const createExtraFlavorControls = ({
     flavors,
+    getPrimaryFlavor,
     onAddFlavor,
     onRemoveFlavor
     }) => {
@@ -177,10 +239,17 @@ export const createExtraFlavorControls = ({
         "#add-flavor-button"
     );
 
-    const extraContainer =
-        document.querySelector(
+    const extraContainer = document.querySelector(
         "#extra-flavor-container"
-        );
+    );
+
+    const primaryFlavorLabel = document.querySelector(
+        "#primary-flavor-label"
+    );
+
+    const primaryCustomFlavor = document.querySelector(
+        "#primary-custom-flavor"
+    );
 
     if (!addButton || !extraContainer) {
         return;
@@ -188,14 +257,65 @@ export const createExtraFlavorControls = ({
 
     let isVisible = false;
 
-    const formatExtraPrice = (price) => {
-        if (!price || price === 0) {
-        return "Inbegrepen";
+    const showCollapsedPrimaryFlavor = (flavor) => {
+        const selectWrapper = document.querySelector(
+        "#primary-flavor-select-wrapper"
+        );
+
+        const summary = document.querySelector(
+        "#primary-flavor-summary"
+        );
+
+        const summaryColor = document.querySelector(
+        "#primary-flavor-summary-color"
+        );
+
+        const summaryName = document.querySelector(
+        "#primary-flavor-summary-name"
+        );
+
+        const summaryPrice = document.querySelector(
+        "#primary-flavor-summary-price"
+        );
+
+        if (
+        !selectWrapper ||
+        !summary ||
+        !summaryColor ||
+        !summaryName ||
+        !summaryPrice
+        ) {
+        return;
         }
 
-        return `+ €${price
-        .toFixed(2)
-        .replace(".", ",")}`;
+        selectWrapper.hidden = true;
+        summary.hidden = false;
+
+        summaryColor.style.backgroundColor =
+        flavor.color;
+
+        summaryName.textContent =
+        flavor.name;
+
+        summaryPrice.textContent =
+        formatPrice(flavor.price);
+    };
+
+    const showEditablePrimaryFlavor = () => {
+        const selectWrapper = document.querySelector(
+        "#primary-flavor-select-wrapper"
+        );
+
+        const summary = document.querySelector(
+        "#primary-flavor-summary"
+        );
+
+        if (!selectWrapper || !summary) {
+        return;
+        }
+
+        selectWrapper.hidden = false;
+        summary.hidden = true;
     };
 
     const getFlavorById = (id) => {
@@ -205,19 +325,16 @@ export const createExtraFlavorControls = ({
     };
 
     const emitCustomFlavor = () => {
-        const nameInput =
-        document.querySelector(
-            "#extra-custom-flavor-name"
+        const nameInput = document.querySelector(
+        "#extra-custom-flavor-name"
         );
 
-        const colorInput =
-        document.querySelector(
-            "#extra-custom-flavor-color"
+        const colorInput = document.querySelector(
+        "#extra-custom-flavor-color"
         );
 
-        const colorValue =
-        document.querySelector(
-            "#extra-custom-flavor-color-value"
+        const colorValue = document.querySelector(
+        "#extra-custom-flavor-color-value"
         );
 
         if (
@@ -252,6 +369,17 @@ export const createExtraFlavorControls = ({
             extraContainer.innerHTML = "";
             extraContainer.hidden = true;
 
+            showEditablePrimaryFlavor();
+
+            if (primaryFlavorLabel) {
+            primaryFlavorLabel.textContent =
+                "Kies je smaak";
+            }
+
+            if (primaryCustomFlavor) {
+            primaryCustomFlavor.hidden = false;
+            }
+
             addButton.innerHTML = `
             <span class="add-flavor-button__icon">
                 +
@@ -266,6 +394,24 @@ export const createExtraFlavorControls = ({
         }
 
         extraContainer.hidden = false;
+
+        if (primaryFlavorLabel) {
+            primaryFlavorLabel.textContent =
+            "Smaak 1";
+        }
+
+        if (primaryCustomFlavor) {
+            primaryCustomFlavor.hidden = true;
+        }
+
+        const primaryFlavor =
+            getPrimaryFlavor();
+
+        if (primaryFlavor) {
+            showCollapsedPrimaryFlavor(
+            primaryFlavor
+            );
+        }
 
         extraContainer.innerHTML = `
             <div class="extra-flavor-block">
@@ -292,7 +438,9 @@ export const createExtraFlavorControls = ({
             </label>
 
             <div class="custom-flavor__divider">
-                <span>Of kies je eigen smaak</span>
+                <span>
+                Of kies je eigen smaak
+                </span>
             </div>
 
             <label class="field">
@@ -333,10 +481,9 @@ export const createExtraFlavorControls = ({
             </div>
         `;
 
-        const select =
-            document.querySelector(
+        const select = document.querySelector(
             "#extra-flavor-select"
-            );
+        );
 
         const colorPreview =
             document.querySelector(
@@ -350,8 +497,7 @@ export const createExtraFlavorControls = ({
             option.value = flavor._id;
 
             option.textContent =
-            `${flavor.name} — ` +
-            formatExtraPrice(flavor.price);
+            `${flavor.name}  ${formatPrice(flavor.price)}`;
 
             select.appendChild(option);
         });

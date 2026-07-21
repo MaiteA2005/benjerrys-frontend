@@ -62,7 +62,10 @@ app.innerHTML = `
 
       <div class="panel-content">
         <section class="configuration-section">
-          <h2 class="step-title">Stap 1</h2>
+          <h2 class="step-title">
+            Stap 1
+          </h2>
+
           <p class="step-description">
             Kies je basis
           </p>
@@ -76,68 +79,105 @@ app.innerHTML = `
         </section>
 
         <section class="configuration-section">
-          <h2 class="step-title">Stap 2</h2>
-          <p class="step-description">
+          <h2 class="step-title">
+            Stap 2
+          </h2>
+
+          <p
+            id="primary-flavor-label"
+            class="step-description"
+          >
             Kies je smaak
           </p>
 
-          <div class="select-field">
-            <span
-              id="selected-flavor-color-preview"
-              class="select-field__color"
-            ></span>
-
-            <select
-              id="flavor-select"
-              class="select-field__select"
-            >
-              <option>Smaken laden...</option>
-            </select>
-
-            <span class="select-field__arrow">
-              ⌄
-            </span>
-          </div>
-
-          <div class="custom-flavor__divider">
-            <span>Of kies je eigen smaak</span>
-          </div>
-
-          <label class="field">
-            <span class="field__label">
-              Naam
-            </span>
-
-            <input
-              id="custom-flavor-name"
-              class="field__input"
-              type="text"
-              maxlength="40"
-              placeholder="Naam"
-            />
-          </label>
-
-          <label class="field">
-            <span class="field__label">
-              Kies je kleur
-            </span>
-
-            <div class="color-picker">
-              <input
-                id="custom-flavor-color"
-                class="color-picker__input"
-                type="color"
-                value="#edb8cc"
-              />
-
+          <div id="primary-flavor-select-wrapper">
+            <div class="select-field">
               <span
-                id="custom-flavor-color-value"
-                class="color-picker__value"
+                id="selected-flavor-color-preview"
+                class="select-field__color"
+              ></span>
+
+              <select
+                id="flavor-select"
+                class="select-field__select"
               >
-                #EDB8CC
+                <option>
+                  Smaken laden...
+                </option>
+              </select>
+
+              <span class="select-field__arrow">
+                ⌄
               </span>
             </div>
-          </label>
+          </div>
+
+          <div
+            id="primary-flavor-summary"
+            class="selected-flavor-card"
+            hidden
+          >
+            <span
+              id="primary-flavor-summary-color"
+              class="selected-flavor-card__color"
+            ></span>
+
+            <span
+              id="primary-flavor-summary-name"
+              class="selected-flavor-card__name"
+            >
+              Nog niet gekozen
+            </span>
+
+            <span
+              id="primary-flavor-summary-price"
+              class="selected-flavor-card__price"
+            ></span>
+          </div>
+
+          <div id="primary-custom-flavor">
+            <div class="custom-flavor__divider">
+              <span>
+                Of kies je eigen smaak
+              </span>
+            </div>
+
+            <label class="field">
+              <span class="field__label">
+                Naam
+              </span>
+
+              <input
+                id="custom-flavor-name"
+                class="field__input"
+                type="text"
+                maxlength="40"
+                placeholder="Naam"
+              />
+            </label>
+
+            <label class="field">
+              <span class="field__label">
+                Kies je kleur
+              </span>
+
+              <div class="color-picker">
+                <input
+                  id="custom-flavor-color"
+                  class="color-picker__input"
+                  type="color"
+                  value="#edb8cc"
+                />
+
+                <span
+                  id="custom-flavor-color-value"
+                  class="color-picker__value"
+                >
+                  #EDB8CC
+                </span>
+              </div>
+            </label>
+          </div>
 
           <div
             id="extra-flavor-container"
@@ -158,11 +198,17 @@ app.innerHTML = `
           </button>
         </section>
 
-        <section class="configuration-section summary-section">
-          <h2 class="step-title">Stap 3</h2>
+        <section
+          class="configuration-section summary-section"
+        >
+          <h2 class="step-title">
+            Stap 3
+          </h2>
 
           <div class="summary-row">
-            <span>Gekozen basis</span>
+            <span>
+              Gekozen basis
+            </span>
 
             <strong id="selected-base-name">
               Nog niet gekozen
@@ -170,7 +216,9 @@ app.innerHTML = `
           </div>
 
           <div class="summary-row">
-            <span>Gekozen smaak</span>
+            <span>
+              Gekozen smaak
+            </span>
 
             <strong id="selected-flavor-name">
               Nog niet gekozen
@@ -182,7 +230,9 @@ app.innerHTML = `
             class="summary-row"
             hidden
           >
-            <span>Extra smaak</span>
+            <span>
+              Extra smaak
+            </span>
 
             <strong id="extra-flavor-name"></strong>
           </div>
@@ -210,7 +260,9 @@ const scene = createScene();
 const camera = createCamera();
 const renderer = createRenderer();
 
-container.appendChild(renderer.domElement);
+container.appendChild(
+  renderer.domElement
+);
 
 addLights(scene);
 
@@ -249,6 +301,7 @@ const updateSummary = () => {
 
   if (configuratorState.extraFlavor) {
     extraSummary.hidden = false;
+
     extraFlavorName.textContent =
       configuratorState.extraFlavor.name;
   } else {
@@ -299,6 +352,7 @@ const loadConfigurator = async () => {
 
     createBaseControls({
       bases,
+
       selectedBase:
         configuratorState.selectedBase,
 
@@ -309,7 +363,9 @@ const loadConfigurator = async () => {
           base
         });
 
-        if (configuratorState.extraFlavor) {
+        if (
+          configuratorState.extraFlavor
+        ) {
           await addExtraScoop({
             scene,
             state: configuratorState,
@@ -324,6 +380,7 @@ const loadConfigurator = async () => {
 
     createFlavorDropdown({
       flavors,
+
       selectedFlavor:
         configuratorState.selectedFlavor,
 
@@ -361,6 +418,12 @@ const loadConfigurator = async () => {
     createExtraFlavorControls({
       flavors,
 
+      getPrimaryFlavor: () => {
+        return getCurrentFlavor(
+          configuratorState
+        );
+      },
+
       onAddFlavor: async (flavor) => {
         configuratorState.extraFlavor =
           flavor;
@@ -390,25 +453,41 @@ const loadConfigurator = async () => {
   } catch (error) {
     console.error(error);
 
-    document.querySelector(
-      "#base-options"
-    ).innerHTML = `
-      <p class="error-message">
-        De opties konden niet geladen worden.
-      </p>
-    `;
+    const baseOptions =
+      document.querySelector(
+        "#base-options"
+      );
+
+    if (baseOptions) {
+      baseOptions.innerHTML = `
+        <p class="error-message">
+          De opties konden niet geladen worden.
+        </p>
+      `;
+    }
   }
 };
 
-document
-  .querySelector("#order-button")
-  .addEventListener("click", () => {
+const orderButton =
+  document.querySelector(
+    "#order-button"
+  );
+
+orderButton.addEventListener(
+  "click",
+  () => {
     const currentFlavor =
-      getCurrentFlavor(configuratorState);
+      getCurrentFlavor(
+        configuratorState
+      );
 
     const orderPreview = {
-      base: configuratorState.selectedBase,
-      flavor: currentFlavor,
+      base:
+        configuratorState.selectedBase,
+
+      flavor:
+        currentFlavor,
+
       extraFlavor:
         configuratorState.extraFlavor
     };
@@ -418,23 +497,41 @@ document
       orderPreview
     );
 
+    const extraFlavorText =
+      configuratorState.extraFlavor
+        ? ` en ${configuratorState.extraFlavor.name}`
+        : "";
+
     alert(
-      `Je koos ${configuratorState.selectedBase?.name} met ${currentFlavor.name}.`
+      `Je koos ${configuratorState.selectedBase?.name} met ${currentFlavor.name}${extraFlavorText}.`
     );
-  });
+  }
+);
 
 loadConfigurator();
 
 const handleResize = () => {
-  const width = container.clientWidth;
-  const height = container.clientHeight;
+  const width =
+    container.clientWidth;
 
-  camera.aspect = width / height;
+  const height =
+    container.clientHeight;
+
+  camera.aspect =
+    width / height;
+
   camera.updateProjectionMatrix();
 
-  renderer.setSize(width, height);
+  renderer.setSize(
+    width,
+    height
+  );
+
   renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 2)
+    Math.min(
+      window.devicePixelRatio,
+      2
+    )
   );
 };
 
@@ -446,10 +543,16 @@ window.addEventListener(
 handleResize();
 
 const animate = () => {
-  requestAnimationFrame(animate);
+  requestAnimationFrame(
+    animate
+  );
 
   controls.update();
-  renderer.render(scene, camera);
+
+  renderer.render(
+    scene,
+    camera
+  );
 };
 
 animate();

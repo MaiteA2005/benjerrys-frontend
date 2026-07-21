@@ -383,8 +383,42 @@ button {
   margin-top: 16px;
 }
 
-.extra-flavor-container[hidden] {
-  display: none;
+#primary-flavor-select-wrapper[hidden],
+#primary-flavor-summary[hidden],
+#primary-custom-flavor[hidden],
+.extra-flavor-container[hidden],
+.summary-row[hidden] {
+  display: none !important;
+}
+
+.selected-flavor-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  background: #ffffff;
+  border: 1px solid #dce4e7;
+  border-radius: 10px;
+}
+
+.selected-flavor-card__color {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 1px solid rgb(0 0 0 / 8%);
+  border-radius: 50%;
+}
+
+.selected-flavor-card__name {
+  margin-left: 10px;
+  font-size: 1rem;
+}
+
+.selected-flavor-card__price {
+  margin-left: auto;
+  color: #8f8f8f;
+  font-size: 0.65rem;
 }
 
 @media (max-width: 850px) {
