@@ -3,10 +3,11 @@ export const configuratorState = {
     flavors: [],
 
     selectedBase: null,
-    selectedFlavors: null,
+    selectedFlavor: null,
+    extraFlavor: null,
 
     customFlavorName: "",
-    customFlavorColor: "#a9d4f5",
+    customFlavorColor: "#edb8cc",
 
     currentBaseModel: null,
     currentScoop: null

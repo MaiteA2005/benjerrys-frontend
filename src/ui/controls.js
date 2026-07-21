@@ -3,7 +3,16 @@ const formatPrice = (price) => {
         return "Inbegrepen";
     }
 
-    return `+ €${price.toFixed(2)}`;
+    return `+ €${price.toFixed(2).replace(".", ",")}`;
+};
+
+const createFlavorSelectOption = (flavor) => {
+    const option = document.createElement("option");
+
+    option.value = flavor._id;
+    option.textContent = `${flavor.name}  ${formatPrice(flavor.price)}`;
+
+    return option;
 };
 
 export const createBaseControls = ({
@@ -13,51 +22,48 @@ export const createBaseControls = ({
     }) => {
     const controls = document.querySelector("#base-options");
 
+    if (!controls) {
+        return;
+    }
+
     controls.innerHTML = "";
 
     bases.forEach((base) => {
         const button = document.createElement("button");
 
         button.type = "button";
-        button.className = "option-button";
+        button.className = "base-option";
         button.dataset.baseId = base._id;
 
         if (base._id === selectedBase?._id) {
-        button.classList.add("option-button--active");
+        button.classList.add("base-option--active");
         }
 
         button.innerHTML = `
-        <span class="option-button__name">
+        <span class="base-option__name">
             ${base.name}
         </span>
 
-        <span class="option-button__price">
+        <span class="base-option__price">
             ${formatPrice(base.price)}
         </span>
         `;
 
         button.addEventListener("click", async () => {
         controls
-            .querySelectorAll(".option-button")
+            .querySelectorAll(".base-option")
             .forEach((item) => {
-            item.classList.remove(
-                "option-button--active"
-            );
+            item.classList.remove("base-option--active");
             });
 
-        button.classList.add(
-            "option-button--active"
-        );
+        button.classList.add("base-option--active");
 
         try {
             button.disabled = true;
             await onBaseChange(base);
         } catch (error) {
             console.error(error);
-
-            button.classList.remove(
-            "option-button--active"
-            );
+            button.classList.remove("base-option--active");
         } finally {
             button.disabled = false;
         }
@@ -67,98 +73,65 @@ export const createBaseControls = ({
     });
 };
 
-export const createFlavorControls = ({
+export const createFlavorDropdown = ({
     flavors,
     selectedFlavor,
     onFlavorChange
     }) => {
-    const controls = document.querySelector(
-        "#flavor-options"
+    const select = document.querySelector("#flavor-select");
+    const colorPreview = document.querySelector(
+        "#selected-flavor-color-preview"
     );
 
-    controls.innerHTML = "";
+    if (!select) {
+        return;
+    }
+
+    select.innerHTML = "";
 
     flavors.forEach((flavor) => {
-        const button = document.createElement("button");
-
-        button.type = "button";
-        button.className =
-        "option-button flavor-button";
-
-        button.dataset.flavorId = flavor._id;
-
-        if (flavor._id === selectedFlavor?._id) {
-        button.classList.add(
-            "option-button--active"
+        select.appendChild(
+        createFlavorSelectOption(flavor)
         );
+    });
+
+    if (selectedFlavor?._id) {
+        select.value = selectedFlavor._id;
+    }
+
+    const updateFlavor = () => {
+        const flavor = flavors.find(
+        (item) => item._id === select.value
+        );
+
+        if (!flavor) {
+        return;
         }
 
-        button.innerHTML = `
-        <span class="flavor-button__content">
-            <span
-            class="flavor-button__color"
-            style="background-color: ${flavor.color}"
-            ></span>
-
-            <span class="option-button__name">
-            ${flavor.name}
-            </span>
-        </span>
-
-        <span class="option-button__price">
-            ${formatPrice(flavor.price)}
-        </span>
-        `;
-
-        button.addEventListener("click", () => {
-        controls
-            .querySelectorAll(".option-button")
-            .forEach((item) => {
-            item.classList.remove(
-                "option-button--active"
-            );
-            });
-
-        button.classList.add(
-            "option-button--active"
-        );
-
-        const customNameInput = document.querySelector(
-            "#custom-flavor-name"
-        );
-
-        const customColorInput = document.querySelector(
-            "#custom-flavor-color"
-        );
-
-        const customColorValue = document.querySelector(
-            "#custom-flavor-color-value"
-        );
-
-        if (customNameInput) {
-            customNameInput.value = "";
-        }
-
-        if (customColorInput) {
-            customColorInput.value = flavor.color;
-        }
-
-        if (customColorValue) {
-            customColorValue.textContent = flavor.color;
+        if (colorPreview) {
+        colorPreview.style.backgroundColor = flavor.color;
         }
 
         onFlavorChange(flavor);
-        });
+    };
 
-        controls.appendChild(button);
-    });
+    const initialFlavor = flavors.find(
+        (item) => item._id === select.value
+    );
+
+    if (initialFlavor && colorPreview) {
+        colorPreview.style.backgroundColor =
+        initialFlavor.color;
+    }
+
+    select.addEventListener("change", updateFlavor);
 };
 
 export const createCustomFlavorControls = ({
     initialName = "",
-    initialColor = "#f5a9c6",
+    initialColor = "#edb8cc",
     onCustomFlavorChange
-}) => {
+    }) => {
     const nameInput = document.querySelector(
         "#custom-flavor-name"
     );
@@ -172,46 +145,135 @@ export const createCustomFlavorControls = ({
     );
 
     if (!nameInput || !colorInput || !colorValue) {
-        console.warn(
-            "De velden voor de eigen smaak werden niet gevonden."
-        );
-
         return;
     }
 
     nameInput.value = initialName;
     colorInput.value = initialColor;
-    colorValue.textContent = initialColor;
+    colorValue.textContent = initialColor.toUpperCase();
 
     const emitChange = () => {
         const name = nameInput.value;
         const color = colorInput.value;
 
-        colorValue.textContent = color;
-
-        document
-            .querySelectorAll(
-                "#flavor-options .option-button"
-            )
-            .forEach((button) => {
-                button.classList.remove(
-                    "option-button--active"
-                );
-            });
+        colorValue.textContent = color.toUpperCase();
 
         onCustomFlavorChange({
-            name,
-            color
+        name,
+        color
         });
     };
 
-    nameInput.addEventListener(
-        "input",
-        emitChange
+    nameInput.addEventListener("input", emitChange);
+    colorInput.addEventListener("input", emitChange);
+};
+
+export const createExtraFlavorControls = ({
+    flavors,
+    onAddFlavor,
+    onRemoveFlavor
+    }) => {
+    const addButton = document.querySelector(
+        "#add-flavor-button"
     );
 
-    colorInput.addEventListener(
-        "input",
-        emitChange
+    const extraContainer = document.querySelector(
+        "#extra-flavor-container"
     );
+
+    if (!addButton || !extraContainer) {
+        return;
+    }
+
+    let isVisible = false;
+
+    addButton.addEventListener("click", () => {
+        isVisible = !isVisible;
+
+        if (!isVisible) {
+        extraContainer.innerHTML = "";
+        extraContainer.hidden = true;
+
+        addButton.innerHTML = `
+            <span class="add-flavor-button__icon">+</span>
+            Voeg nog een smaak toe
+        `;
+
+        onRemoveFlavor?.();
+        return;
+        }
+
+        extraContainer.hidden = false;
+
+        extraContainer.innerHTML = `
+        <label class="field">
+            <span class="field__label">
+            Tweede smaak
+            </span>
+
+            <div class="select-field">
+            <span
+                id="extra-flavor-color-preview"
+                class="select-field__color"
+            ></span>
+
+            <select
+                id="extra-flavor-select"
+                class="select-field__select"
+            ></select>
+
+            <span class="select-field__arrow">⌄</span>
+            </div>
+        </label>
+        `;
+
+        const select = document.querySelector(
+        "#extra-flavor-select"
+        );
+
+        const colorPreview = document.querySelector(
+        "#extra-flavor-color-preview"
+        );
+
+        flavors.forEach((flavor) => {
+        select.appendChild(
+            createFlavorSelectOption(flavor)
+        );
+        });
+
+        const updateExtraFlavor = () => {
+        const flavor = flavors.find(
+            (item) => item._id === select.value
+        );
+
+        if (!flavor) {
+            return;
+        }
+
+        colorPreview.style.backgroundColor =
+            flavor.color;
+
+        onAddFlavor(flavor);
+        };
+
+        const firstFlavor = flavors[0];
+
+        if (firstFlavor) {
+        select.value = firstFlavor._id;
+        colorPreview.style.backgroundColor =
+            firstFlavor.color;
+
+        onAddFlavor(firstFlavor);
+        }
+
+        select.addEventListener(
+        "change",
+        updateExtraFlavor
+        );
+
+        addButton.innerHTML = `
+        <span class="add-flavor-button__icon">−</span>
+        Verwijder extra smaak
+        `;
+    });
 };
