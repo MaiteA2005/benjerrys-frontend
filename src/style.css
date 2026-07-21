@@ -2,6 +2,14 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: "Chunk";
+  src: url("./assets/font/ChunkFive-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   font-family:
     sans-serif;
@@ -91,8 +99,9 @@ button {
 
 .panel-header__subtitle {
   margin: -55px 0 0;
+  font-family: "Chunk", sans-serif;
   font-size: 1.45rem;
-  font-weight: 900;
+  font-weight: 400;
   line-height: 1;
 }
 
@@ -106,9 +115,10 @@ button {
 }
 
 .step-title {
+  font-family: "Chunk", sans-serif;
   margin: 0 0 4px;
   font-size: 1.35rem;
-  font-weight: 900;
+  font-weight: 400;
   line-height: 1.2;
 }
 
@@ -345,8 +355,9 @@ button {
   background: #fdb913;
   border: 0;
   border-radius: 10px;
+  font-family: "Chunk", sans-serif;
   font-size: 1.05rem;
-  font-weight: 900;
+  font-weight: 300;
   text-transform: uppercase;
   cursor: pointer;
   transition:
