@@ -481,30 +481,48 @@ orderButton.addEventListener(
         configuratorState
       );
 
-    const orderPreview = {
+    if (
+      !configuratorState.selectedBase ||
+      !currentFlavor
+    ) {
+      alert(
+        "Kies eerst een basis en een smaak."
+      );
+
+      return;
+    }
+
+    const selectedFlavors = [
+      currentFlavor
+    ];
+
+    if (
+      configuratorState.extraFlavor
+    ) {
+      selectedFlavors.push(
+        configuratorState.extraFlavor
+      );
+    }
+
+    const configuration = {
       base:
         configuratorState.selectedBase,
 
-      flavor:
-        currentFlavor,
+      flavors:
+        selectedFlavors,
 
-      extraFlavor:
-        configuratorState.extraFlavor
+      toppings:
+        configuratorState.selectedToppings ||
+        []
     };
 
-    console.log(
-      "Bestelling:",
-      orderPreview
+    localStorage.setItem(
+      "iceCreamConfiguration",
+      JSON.stringify(configuration)
     );
 
-    const extraFlavorText =
-      configuratorState.extraFlavor
-        ? ` en ${configuratorState.extraFlavor.name}`
-        : "";
-
-    alert(
-      `Je koos ${configuratorState.selectedBase?.name} met ${currentFlavor.name}${extraFlavorText}.`
-    );
+    window.location.href =
+      "/order.html";
   }
 );
 
