@@ -10,7 +10,7 @@
     min-height: 100vh;
     padding: 40px;
     background-image:
-        url("./assets/background.svg");
+        url("./assets/Background.svg");
     background-position: center;
     background-size: cover;
 }
