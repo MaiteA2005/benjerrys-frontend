@@ -93,6 +93,7 @@ export const removeCurrentBase = (scene, state) => {
     state.currentBaseModel = null;
     state.currentScoop = null;
     state.extraScoop = null;
+    state.currentToppingGroup = null;
 };
 
 const createConeConfiguration = async (model, state) => {

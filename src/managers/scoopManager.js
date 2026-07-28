@@ -1,50 +1,122 @@
 import * as THREE from "three";
-import { loadModel } from "../loaders/modelLoader.js";
 
-const SCOOP_MESH_NAME = "IceCream_3_3";
+import {
+    loadModel
+} from "../loaders/modelLoader.js";
 
-export const findScoopMesh = (model) => {
+const SCOOP_MESH_NAME =
+    "IceCream_3_3";
+
+const SPRINKLE_MESH_NAME =
+    "IceCream_3_2";
+
+export const findScoopMesh = (
+    model
+) => {
     let scoopMesh = null;
 
     model.traverse((child) => {
         if (
-        child.isMesh &&
-        child.name === SCOOP_MESH_NAME
+            child.isMesh &&
+            child.name ===
+                SCOOP_MESH_NAME
         ) {
-        scoopMesh = child;
+            scoopMesh = child;
         }
     });
 
     return scoopMesh;
 };
 
-const cloneMaterial = (material) => {
+const hasSprinkleMaterial = (
+    material
+) => {
+    const materials =
+        Array.isArray(material)
+            ? material
+            : [material];
+
+    return materials.some(
+        (item) => {
+            return (
+                item?.name
+                    ?.toLowerCase()
+                    .includes("red") ||
+                item?.name
+                    ?.toLowerCase()
+                    .includes("sprinkle")
+            );
+        }
+    );
+};
+
+export const findSprinkleMeshes = (
+    model
+) => {
+    const sprinkleMeshes = [];
+
+    model.traverse((child) => {
+        if (!child.isMesh) {
+            return;
+        }
+
+        const isSprinkleMesh =
+            child.name ===
+                SPRINKLE_MESH_NAME ||
+            child.name
+                .toLowerCase()
+                .includes("sprinkle") ||
+            hasSprinkleMaterial(
+                child.material
+            );
+
+        if (isSprinkleMesh) {
+            sprinkleMeshes.push(child);
+        }
+    });
+
+    return sprinkleMeshes;
+};
+
+const cloneMaterial = (
+    material
+) => {
     if (Array.isArray(material)) {
-        return material.map((item) => item.clone());
+        return material.map(
+            (item) => item.clone()
+        );
     }
 
     return material.clone();
 };
 
-export const createScoopFromModel = (model) => {
+export const createScoopFromModel = (
+    model
+) => {
     model.updateMatrixWorld(true);
 
-    const sourceMesh = findScoopMesh(model);
+    const sourceMesh =
+        findScoopMesh(model);
 
     if (!sourceMesh) {
         throw new Error(
-        `Scoop-mesh "${SCOOP_MESH_NAME}" niet gevonden`
+            `Scoop-mesh "${SCOOP_MESH_NAME}" niet gevonden`
         );
     }
 
-    const geometry = sourceMesh.geometry.clone();
+    const geometry =
+        sourceMesh.geometry.clone();
 
-    geometry.applyMatrix4(sourceMesh.matrixWorld);
+    geometry.applyMatrix4(
+        sourceMesh.matrixWorld
+    );
+
     geometry.computeBoundingBox();
 
-    const center = geometry.boundingBox.getCenter(
-        new THREE.Vector3()
-    );
+    const center =
+        geometry.boundingBox.getCenter(
+            new THREE.Vector3()
+        );
 
     geometry.translate(
         -center.x,
@@ -54,46 +126,193 @@ export const createScoopFromModel = (model) => {
 
     geometry.computeBoundingBox();
 
-    const scoop = new THREE.Mesh(
-        geometry,
-        cloneMaterial(sourceMesh.material)
-    );
+    const scoop =
+        new THREE.Mesh(
+            geometry,
+            cloneMaterial(
+                sourceMesh.material
+            )
+        );
 
-    scoop.name = "configurator-scoop";
+    scoop.name =
+        "configurator-scoop";
+
     scoop.castShadow = true;
     scoop.receiveShadow = true;
 
     return scoop;
 };
 
-export const createScoopFromConeFile = async () => {
-    const coneModel = await loadModel("/models/cone.glb");
+export const createSprinklesFromModel = (
+    model
+) => {
+    model.updateMatrixWorld(true);
 
-    return createScoopFromModel(coneModel);
+    const sourceScoop =
+        findScoopMesh(model);
+
+    if (!sourceScoop) {
+        throw new Error(
+            `Scoop-mesh "${SCOOP_MESH_NAME}" niet gevonden`
+        );
+    }
+
+    const sprinkleMeshes =
+        findSprinkleMeshes(model);
+
+    if (!sprinkleMeshes.length) {
+        throw new Error(
+            `Sprinkle-mesh "${SPRINKLE_MESH_NAME}" niet gevonden`
+        );
+    }
+
+    /*
+     * Bepaal het middelpunt en de grootte van
+     * de originele ijsbol. De sprinkels worden
+     * ten opzichte van dit middelpunt geplaatst.
+     */
+    const scoopGeometry =
+        sourceScoop.geometry.clone();
+
+    scoopGeometry.applyMatrix4(
+        sourceScoop.matrixWorld
+    );
+
+    scoopGeometry.computeBoundingBox();
+
+    const scoopCenter =
+        scoopGeometry.boundingBox.getCenter(
+            new THREE.Vector3()
+        );
+
+    const scoopSize =
+        scoopGeometry.boundingBox.getSize(
+            new THREE.Vector3()
+        );
+
+    scoopGeometry.dispose();
+
+    const sprinkleGroup =
+        new THREE.Group();
+
+    sprinkleGroup.name =
+        "configurator-sprinkles";
+
+    sprinkleMeshes.forEach(
+        (sourceMesh) => {
+            const geometry =
+                sourceMesh.geometry.clone();
+
+            /*
+             * Zet de originele transformatie
+             * rechtstreeks in de geometrie.
+             */
+            geometry.applyMatrix4(
+                sourceMesh.matrixWorld
+            );
+
+            /*
+             * Maak de sprinkels relatief aan
+             * het middelpunt van de bol.
+             */
+            geometry.translate(
+                -scoopCenter.x,
+                -scoopCenter.y,
+                -scoopCenter.z
+            );
+
+            geometry.computeBoundingBox();
+            geometry.computeVertexNormals();
+
+            const sprinkleMesh =
+                new THREE.Mesh(
+                    geometry,
+                    cloneMaterial(
+                        sourceMesh.material
+                    )
+                );
+
+            sprinkleMesh.name =
+                "configurator-sprinkle-mesh";
+
+            sprinkleMesh.visible = true;
+            sprinkleMesh.castShadow = true;
+            sprinkleMesh.receiveShadow = true;
+
+            sprinkleGroup.add(
+                sprinkleMesh
+            );
+        }
+    );
+
+    /*
+     * Deze referentiegrootte gebruiken we later
+     * om de sprinkels aan de gekozen bol te schalen.
+     */
+    sprinkleGroup.userData
+        .referenceScoopSize =
+        scoopSize.clone();
+
+    return sprinkleGroup;
 };
 
-export const hideOriginalScoop = (model) => {
-    const scoopMesh = findScoopMesh(model);
+export const createScoopFromConeFile =
+    async () => {
+        const coneModel =
+            await loadModel(
+                "/models/cone.glb"
+            );
+
+        return createScoopFromModel(
+            coneModel
+        );
+    };
+
+export const createSprinklesFromConeFile =
+    async () => {
+        const coneModel =
+            await loadModel(
+                "/models/cone.glb"
+            );
+
+        return createSprinklesFromModel(
+            coneModel
+        );
+    };
+
+export const hideOriginalScoop = (
+    model
+) => {
+    const scoopMesh =
+        findScoopMesh(model);
 
     if (scoopMesh) {
         scoopMesh.visible = false;
     }
 };
 
-export const setScoopColor = (scoop, color) => {
-    const materials = Array.isArray(scoop.material)
-        ? scoop.material
-        : [scoop.material];
+export const setScoopColor = (
+    scoop,
+    color
+) => {
+    const materials =
+        Array.isArray(scoop.material)
+            ? scoop.material
+            : [scoop.material];
 
-    materials.forEach((material) => {
-        if (material.color) {
-        material.color.set(color);
+    materials.forEach(
+        (material) => {
+            if (material.color) {
+                material.color.set(
+                    color
+                );
+            }
+
+            material.metalness = 0;
+            material.roughness = 0.9;
+            material.needsUpdate = true;
         }
-
-        material.metalness = 0;
-        material.roughness = 0.9;
-        material.needsUpdate = true;
-    });
+    );
 };
 
 export const placeScoopOnBase = ({
@@ -101,47 +320,70 @@ export const placeScoopOnBase = ({
     baseModel,
     overlap = 0.12,
     scale = 1
-    }) => {
-    
+}) => {
     scoop.scale.setScalar(scale);
 
     baseModel.updateMatrixWorld(true);
     scoop.updateMatrixWorld(true);
 
-    const baseBox = new THREE.Box3().setFromObject(baseModel);
-    const baseCenter = baseBox.getCenter(new THREE.Vector3());
+    const baseBox =
+        new THREE.Box3()
+            .setFromObject(baseModel);
 
-    const scoopBox = new THREE.Box3().setFromObject(scoop);
-    const scoopSize = scoopBox.getSize(new THREE.Vector3());
+    const baseCenter =
+        baseBox.getCenter(
+            new THREE.Vector3()
+        );
+
+    const scoopBox =
+        new THREE.Box3()
+            .setFromObject(scoop);
+
+    const scoopSize =
+        scoopBox.getSize(
+            new THREE.Vector3()
+        );
 
     scoop.position.set(
         baseCenter.x,
-        baseBox.max.y + scoopSize.y / 2 - overlap,
+        baseBox.max.y +
+            scoopSize.y / 2 -
+            overlap,
         baseCenter.z
     );
 
     scoop.updateMatrixWorld(true);
 };
 
-const disposeScoop = (scoop) => {
+const disposeScoop = (
+    scoop
+) => {
     scoop.geometry?.dispose();
 
-    const materials = Array.isArray(scoop.material)
-        ? scoop.material
-        : [scoop.material];
+    const materials =
+        Array.isArray(scoop.material)
+            ? scoop.material
+            : [scoop.material];
 
-    materials.forEach((material) => {
-        material?.dispose();
-    });
+    materials.forEach(
+        (material) => {
+            material?.dispose();
+        }
+    );
 };
 
-export const removeExtraScoop = (state) => {
+export const removeExtraScoop = (
+    state
+) => {
     if (!state.extraScoop) {
         return;
     }
 
     state.extraScoop.removeFromParent();
-    disposeScoop(state.extraScoop);
+
+    disposeScoop(
+        state.extraScoop
+    );
 
     state.extraScoop = null;
 };
@@ -150,13 +392,13 @@ export const addExtraScoop = async ({
     scene,
     state,
     flavor
-    }) => {
+}) => {
     if (
         !state.currentBaseModel ||
         !state.currentScoop
     ) {
         console.warn(
-        "Er is nog geen basis of eerste ijsbol geladen."
+            "Er is nog geen basis of eerste ijsbol geladen."
         );
 
         return null;
@@ -172,67 +414,88 @@ export const addExtraScoop = async ({
         flavor.color
     );
 
-    state.currentBaseModel.updateMatrixWorld(true);
-    state.currentScoop.updateMatrixWorld(true);
+    state.currentBaseModel
+        .updateMatrixWorld(true);
 
-    const firstBox = new THREE.Box3().setFromObject(
-        state.currentScoop
-    );
+    state.currentScoop
+        .updateMatrixWorld(true);
 
-    const firstCenter = firstBox.getCenter(
-        new THREE.Vector3()
-    );
+    const firstBox =
+        new THREE.Box3()
+            .setFromObject(
+                state.currentScoop
+            );
 
-    const firstSize = firstBox.getSize(
-        new THREE.Vector3()
-    );
+    const firstCenter =
+        firstBox.getCenter(
+            new THREE.Vector3()
+        );
+
+    const firstSize =
+        firstBox.getSize(
+            new THREE.Vector3()
+        );
 
     extraScoop.updateMatrixWorld(true);
 
     const originalExtraBox =
-        new THREE.Box3().setFromObject(extraScoop);
+        new THREE.Box3()
+            .setFromObject(
+                extraScoop
+            );
 
     const originalExtraSize =
         originalExtraBox.getSize(
-        new THREE.Vector3()
+            new THREE.Vector3()
         );
 
     const targetWidth =
         firstSize.x * 0.92;
 
     const scale =
-        targetWidth / originalExtraSize.x;
+        targetWidth /
+        originalExtraSize.x;
 
     extraScoop.scale.setScalar(scale);
     extraScoop.updateMatrixWorld(true);
 
     const scaledExtraBox =
-        new THREE.Box3().setFromObject(extraScoop);
+        new THREE.Box3()
+            .setFromObject(
+                extraScoop
+            );
 
     const scaledExtraSize =
         scaledExtraBox.getSize(
-        new THREE.Vector3()
+            new THREE.Vector3()
         );
 
     const overlap =
-        firstSize.y * 0.50;
+        firstSize.y * 0.5;
 
-    const worldPosition = new THREE.Vector3(
-        firstCenter.x,
-        firstBox.max.y +
-        scaledExtraSize.y / 2 -
-        overlap,
-        firstCenter.z
-    );
+    const worldPosition =
+        new THREE.Vector3(
+            firstCenter.x,
+            firstBox.max.y +
+                scaledExtraSize.y / 2 -
+                overlap,
+            firstCenter.z
+        );
 
     scene.add(extraScoop);
 
-    extraScoop.position.copy(worldPosition);
+    extraScoop.position.copy(
+        worldPosition
+    );
+
     extraScoop.updateMatrixWorld(true);
 
-    state.currentBaseModel.attach(extraScoop);
+    state.currentBaseModel.attach(
+        extraScoop
+    );
 
-    state.extraScoop = extraScoop;
+    state.extraScoop =
+        extraScoop;
 
     return extraScoop;
 };
