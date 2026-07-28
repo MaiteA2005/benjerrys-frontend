@@ -4,14 +4,18 @@ import logoImage from "./assets/b&j-logo.svg";
 
 import {
   getBases,
-  getFlavors
+  getFlavors,
+  getToppings
 } from "./api/api.js";
 
-import { createScene } from "./scene/scene.js";
-import { createCamera } from "./scene/camera.js";
-import { createRenderer } from "./scene/renderer.js";
-import { addLights } from "./scene/lights.js";
-import { createControls } from "./scene/controls.js";
+import {createScene} from "./scene/scene.js";
+import {createCamera} from "./scene/camera.js";
+import {createRenderer} from "./scene/renderer.js";
+import {addLights} from "./scene/lights.js";
+
+import {
+  createControls
+} from "./scene/controls.js";
 
 import {
   configuratorState
@@ -33,13 +37,21 @@ import {
 } from "./managers/scoopManager.js";
 
 import {
+  applyTopping,
+  refreshTopping,
+  removeTopping
+} from "./managers/toppingManager.js";
+
+import {
   createBaseControls,
   createFlavorDropdown,
   createCustomFlavorControls,
-  createExtraFlavorControls
+  createExtraFlavorControls,
+  createToppingDropdown
 } from "./ui/controls.js";
 
-const app = document.querySelector("#app");
+const app =
+  document.querySelector("#app");
 
 app.innerHTML = `
   <main class="configurator">
@@ -198,11 +210,44 @@ app.innerHTML = `
           </button>
         </section>
 
-        <section
-          class="configuration-section summary-section"
-        >
+        <section class="configuration-section">
           <h2 class="step-title">
             Stap 3
+          </h2>
+
+          <p class="step-description">
+            Kies je topping
+          </p>
+
+          <div class="select-field">
+            <span
+              id="selected-topping-color-preview"
+              class="select-field__color"
+            ></span>
+
+            <select
+              id="topping-select"
+              class="select-field__select"
+            >
+              <option>
+                Toppings laden...
+              </option>
+            </select>
+
+            <span class="select-field__arrow">
+              ⌄
+            </span>
+          </div>
+        </section>
+
+        <section
+          class="
+            configuration-section
+            summary-section
+          "
+        >
+          <h2 class="step-title">
+            Jouw ijsje
           </h2>
 
           <div class="summary-row">
@@ -236,6 +281,16 @@ app.innerHTML = `
 
             <strong id="extra-flavor-name"></strong>
           </div>
+
+          <div class="summary-row">
+            <span>
+              Gekozen topping
+            </span>
+
+            <strong id="selected-topping-name">
+              Geen topping gekozen
+            </strong>
+          </div>
         </section>
       </div>
 
@@ -252,13 +307,19 @@ app.innerHTML = `
   </main>
 `;
 
-const container = document.querySelector(
-  "#three-container"
-);
+const container =
+  document.querySelector(
+    "#three-container"
+  );
 
-const scene = createScene();
-const camera = createCamera();
-const renderer = createRenderer();
+const scene =
+  createScene();
+
+const camera =
+  createCamera();
+
+const renderer =
+  createRenderer();
 
 container.appendChild(
   renderer.domElement
@@ -266,57 +327,96 @@ container.appendChild(
 
 addLights(scene);
 
-const controls = createControls(
-  camera,
-  renderer
-);
+const controls =
+  createControls(
+    camera,
+    renderer
+  );
 
 const updateSummary = () => {
-  const baseName = document.querySelector(
-    "#selected-base-name"
-  );
+  const baseName =
+    document.querySelector(
+      "#selected-base-name"
+    );
 
-  const flavorName = document.querySelector(
-    "#selected-flavor-name"
-  );
+  const flavorName =
+    document.querySelector(
+      "#selected-flavor-name"
+    );
 
-  const extraSummary = document.querySelector(
-    "#extra-flavor-summary"
-  );
+  const extraSummary =
+    document.querySelector(
+      "#extra-flavor-summary"
+    );
 
-  const extraFlavorName = document.querySelector(
-    "#extra-flavor-name"
-  );
+  const extraFlavorName =
+    document.querySelector(
+      "#extra-flavor-name"
+    );
 
-  baseName.textContent =
-    configuratorState.selectedBase?.name ||
-    "Nog niet gekozen";
+  const toppingName =
+    document.querySelector(
+      "#selected-topping-name"
+    );
 
-  const currentFlavor = getCurrentFlavor(
-    configuratorState
-  );
+  if (baseName) {
+    baseName.textContent =
+      configuratorState
+        .selectedBase
+        ?.name ||
+      "Nog niet gekozen";
+  }
 
-  flavorName.textContent =
-    currentFlavor.name;
+  const currentFlavor =
+    getCurrentFlavor(
+      configuratorState
+    );
 
-  if (configuratorState.extraFlavor) {
-    extraSummary.hidden = false;
+  if (flavorName) {
+    flavorName.textContent =
+      currentFlavor?.name ||
+      "Nog niet gekozen";
+  }
+  
+  if (
+    extraSummary &&
+    extraFlavorName
+  ) {
+    if (
+      configuratorState.extraFlavor
+    ) {
+      extraSummary.hidden = false;
 
-    extraFlavorName.textContent =
-      configuratorState.extraFlavor.name;
-  } else {
-    extraSummary.hidden = true;
-    extraFlavorName.textContent = "";
+      extraFlavorName.textContent =
+        configuratorState
+          .extraFlavor
+          .name;
+    } else {
+      extraSummary.hidden = true;
+      extraFlavorName.textContent = "";
+    }
+  }
+
+  if (toppingName) {
+    toppingName.textContent =
+      configuratorState
+        .selectedTopping
+        ?.name ||
+      "Geen topping gekozen";
   }
 };
 
 const loadConfigurator = async () => {
   try {
-    const [bases, flavors] =
-      await Promise.all([
-        getBases(),
-        getFlavors()
-      ]);
+    const [
+      bases,
+      flavors,
+      toppings
+    ] = await Promise.all([
+      getBases(),
+      getFlavors(),
+      getToppings()
+    ]);
 
     if (!bases.length) {
       throw new Error(
@@ -330,14 +430,29 @@ const loadConfigurator = async () => {
       );
     }
 
-    configuratorState.bases = bases;
-    configuratorState.flavors = flavors;
+    if (!toppings.length) {
+      throw new Error(
+        "Er zijn geen toppings gevonden."
+      );
+    }
+
+    configuratorState.bases =
+      bases;
+
+    configuratorState.flavors =
+      flavors;
+
+    configuratorState.toppings =
+      toppings;
 
     configuratorState.selectedBase =
       bases[0];
 
     configuratorState.selectedFlavor =
       flavors[0];
+
+    configuratorState.selectedTopping =
+      null;
 
     await showBaseModel({
       scene,
@@ -354,25 +469,38 @@ const loadConfigurator = async () => {
       bases,
 
       selectedBase:
-        configuratorState.selectedBase,
+        configuratorState
+          .selectedBase,
 
-      onBaseChange: async (base) => {
+      onBaseChange: async (
+        base
+      ) => {
         await showBaseModel({
           scene,
-          state: configuratorState,
+          state:
+            configuratorState,
           base
         });
 
         if (
-          configuratorState.extraFlavor
+          configuratorState
+            .extraFlavor
         ) {
           await addExtraScoop({
             scene,
-            state: configuratorState,
+            state:
+              configuratorState,
             flavor:
-              configuratorState.extraFlavor
+              configuratorState
+                .extraFlavor
           });
         }
+
+        await refreshTopping({
+          scene,
+          state:
+            configuratorState
+        });
 
         updateSummary();
       }
@@ -382,11 +510,15 @@ const loadConfigurator = async () => {
       flavors,
 
       selectedFlavor:
-        configuratorState.selectedFlavor,
+        configuratorState
+          .selectedFlavor,
 
-      onFlavorChange: (flavor) => {
+      onFlavorChange: (
+        flavor
+      ) => {
         applyPresetFlavor({
-          state: configuratorState,
+          state:
+            configuratorState,
           flavor
         });
 
@@ -396,17 +528,20 @@ const loadConfigurator = async () => {
 
     createCustomFlavorControls({
       initialName:
-        configuratorState.customFlavorName,
+        configuratorState
+          .customFlavorName,
 
       initialColor:
-        configuratorState.customFlavorColor,
+        configuratorState
+          .customFlavorColor,
 
       onCustomFlavorChange: ({
         name,
         color
       }) => {
         applyCustomFlavor({
-          state: configuratorState,
+          state:
+            configuratorState,
           name,
           color
         });
@@ -424,20 +559,29 @@ const loadConfigurator = async () => {
         );
       },
 
-      onAddFlavor: async (flavor) => {
+      onAddFlavor: async (
+        flavor
+      ) => {
         configuratorState.extraFlavor =
           flavor;
 
         await addExtraScoop({
           scene,
-          state: configuratorState,
+          state:
+            configuratorState,
           flavor
+        });
+
+        await refreshTopping({
+          scene,
+          state:
+            configuratorState
         });
 
         updateSummary();
       },
 
-      onRemoveFlavor: () => {
+      onRemoveFlavor: async () => {
         removeExtraScoop(
           configuratorState
         );
@@ -445,13 +589,56 @@ const loadConfigurator = async () => {
         configuratorState.extraFlavor =
           null;
 
+        await refreshTopping({
+          scene,
+          state:
+            configuratorState
+        });
+
+        updateSummary();
+      }
+    });
+
+    createToppingDropdown({
+      toppings,
+
+      selectedTopping:
+        configuratorState
+          .selectedTopping,
+
+      onToppingChange: async (
+        topping
+      ) => {
+        if (!topping) {
+          removeTopping(
+            configuratorState
+          );
+
+          configuratorState.selectedTopping =
+            null;
+
+          updateSummary();
+
+          return;
+        }
+
+        await applyTopping({
+          scene,
+          state:
+            configuratorState,
+          topping
+        });
+
         updateSummary();
       }
     });
 
     updateSummary();
   } catch (error) {
-    console.error(error);
+    console.error(
+      "Configurator laden mislukt:",
+      error
+    );
 
     const baseOptions =
       document.querySelector(
@@ -464,6 +651,21 @@ const loadConfigurator = async () => {
           De opties konden niet geladen worden.
         </p>
       `;
+    }
+
+    const toppingSelect =
+      document.querySelector(
+        "#topping-select"
+      );
+
+    if (toppingSelect) {
+      toppingSelect.innerHTML = `
+        <option>
+          Toppings konden niet geladen worden
+        </option>
+      `;
+
+      toppingSelect.disabled = true;
     }
   }
 };
@@ -482,7 +684,8 @@ orderButton.addEventListener(
       );
 
     if (
-      !configuratorState.selectedBase ||
+      !configuratorState
+        .selectedBase ||
       !currentFlavor
     ) {
       alert(
@@ -500,25 +703,34 @@ orderButton.addEventListener(
       configuratorState.extraFlavor
     ) {
       selectedFlavors.push(
-        configuratorState.extraFlavor
+        configuratorState
+          .extraFlavor
       );
     }
 
     const configuration = {
       base:
-        configuratorState.selectedBase,
+        configuratorState
+          .selectedBase,
 
       flavors:
         selectedFlavors,
 
-      toppings:
-        configuratorState.selectedToppings ||
-        []
+      toppings: [
+        configuratorState.selectedTopping
+          ? [
+              configuratorState
+                .selectedTopping
+            ]
+          : []
+        ]
     };
 
     localStorage.setItem(
       "iceCreamConfiguration",
-      JSON.stringify(configuration)
+      JSON.stringify(
+        configuration
+      )
     );
 
     window.location.href =
@@ -526,14 +738,19 @@ orderButton.addEventListener(
   }
 );
 
-loadConfigurator();
-
 const handleResize = () => {
   const width =
     container.clientWidth;
 
   const height =
     container.clientHeight;
+
+  if (
+    width === 0 ||
+    height === 0
+  ) {
+    return;
+  }
 
   camera.aspect =
     width / height;
@@ -553,13 +770,6 @@ const handleResize = () => {
   );
 };
 
-window.addEventListener(
-  "resize",
-  handleResize
-);
-
-handleResize();
-
 const animate = () => {
   requestAnimationFrame(
     animate
@@ -573,4 +783,11 @@ const animate = () => {
   );
 };
 
+window.addEventListener(
+  "resize",
+  handleResize
+);
+
+handleResize();
 animate();
+loadConfigurator();

@@ -563,3 +563,123 @@ export const createExtraFlavorControls = ({
         }
     );
 };
+
+export const createToppingDropdown = ({
+    toppings,
+    selectedTopping,
+    onToppingChange
+}) => {
+    const select =
+        document.querySelector(
+            "#topping-select"
+        );
+
+    const colorPreview =
+        document.querySelector(
+            "#selected-topping-color-preview"
+        );
+
+    if (!select) {
+        return;
+    }
+
+    select.innerHTML = "";
+
+    const noToppingOption =
+        document.createElement("option");
+
+    noToppingOption.value = "";
+    noToppingOption.textContent =
+        "Geen topping";
+
+    select.appendChild(
+        noToppingOption
+    );
+
+    toppings.forEach((topping) => {
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value = topping._id;
+
+        option.textContent =
+            `${topping.name}  ${formatPrice(
+                topping.price
+            )}`;
+
+        select.appendChild(option);
+    });
+
+    select.value =
+        selectedTopping?._id || "";
+
+    const updatePreview = (
+        topping
+    ) => {
+        if (!colorPreview) {
+            return;
+        }
+
+        if (!topping) {
+            colorPreview.style
+                .backgroundColor =
+                "transparent";
+
+            colorPreview.style.border =
+                "2px solid #d1d1d1";
+
+            return;
+        }
+
+        colorPreview.style
+            .backgroundColor =
+            topping.color ||
+            "transparent";
+
+        colorPreview.style.border =
+            "";
+    };
+
+    updatePreview(
+        selectedTopping
+    );
+
+    const selectTopping =
+        async () => {
+            const toppingId =
+                select.value;
+
+            const topping =
+                toppingId
+                    ? toppings.find(
+                        (item) =>
+                            item._id ===
+                            toppingId
+                    )
+                    : null;
+
+            updatePreview(topping);
+
+            try {
+                select.disabled = true;
+
+                await onToppingChange(
+                    topping
+                );
+            } catch (error) {
+                console.error(
+                    "Topping toepassen mislukt:",
+                    error
+                );
+            } finally {
+                select.disabled = false;
+            }
+        };
+
+    select.addEventListener(
+        "change",
+        selectTopping
+    );
+};
