@@ -1,15 +1,22 @@
-const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL;
+
+if (!API_URL) {
+    throw new Error(
+        "VITE_API_URL is niet ingesteld. Voeg de API-URL toe aan je environment variables."
+    );
+}
 
 const fetchJson = async (endpoint, options = {}) => {
     const response = await fetch(`${API_URL}${endpoint}`, options);
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response
+            .json()
+            .catch(() => ({}));
 
         throw new Error(
-        errorData.message || `Request mislukt met status ${response.status}`
+            errorData.message ||
+            `Request mislukt met status ${response.status}`
         );
     }
 
@@ -25,8 +32,8 @@ export const getToppings = () => fetchJson("/toppings");
 export const createOrder = (orderData) =>
     fetchJson("/orders", {
         method: "POST",
-        headers: {
-        "Content-Type": "application/json"
+        headers: { 
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(orderData)
     });
