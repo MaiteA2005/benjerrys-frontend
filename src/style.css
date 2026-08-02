@@ -70,7 +70,7 @@ button {
   height: 100%;
 }
 
-.panel {
+.sidebar {
   position: relative;
   z-index: 5;
   display: flex;
@@ -80,7 +80,7 @@ button {
   border-left: 5px solid #fdb913;
 }
 
-.panel-header {
+.sidebarHeader {
   display: grid;
   justify-items: center;
   min-height: 160px;
@@ -88,7 +88,7 @@ button {
   border-bottom: 3px solid #fdb913;
 }
 
-.panel-header__logo {
+.sidebarLogo {
   display: block;
   width: 100%;
   max-width: 380px;
@@ -97,7 +97,7 @@ button {
   margin: -50px 0 0;
 }
 
-.panel-header__subtitle {
+.sidebarSubtitle {
   margin: -55px 0 0;
   font-family: "Chunk", sans-serif;
   font-size: 1.45rem;
@@ -105,16 +105,16 @@ button {
   line-height: 1;
 }
 
-.panel-content {
+.sidebarContent {
   flex: 1;
   padding: 22px 17px 32px;
 }
 
-.configuration-section {
+.step {
   margin: 0 0 34px;
 }
 
-.step-title {
+.stepTitle {
   font-family: "Chunk", sans-serif;
   margin: 0 0 4px;
   font-size: 1.35rem;
@@ -122,17 +122,17 @@ button {
   line-height: 1.2;
 }
 
-.step-description {
+.stepText {
   margin: 0 0 12px;
   font-size: 1.05rem;
 }
 
-.base-options {
+.baseList {
   display: grid;
   gap: 5px;
 }
 
-.base-option {
+.baseOption {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -148,26 +148,26 @@ button {
     background-color 150ms ease;
 }
 
-.base-option:hover {
+.baseOption:hover {
   border-color: #799848;
 }
 
-.base-option--active {
+.baseOptionActive {
   background: #f4f8ef;
   border-color: #799848;
   box-shadow: inset 0 0 0 1px #799848;
 }
 
-.base-option__name {
+.baseOptionName {
   font-size: 1rem;
 }
 
-.base-option__price {
+.baseOptionPrice {
   color: #8f8f8f;
   font-size: 0.65rem;
 }
 
-.select-field {
+.selectBox {
   position: relative;
   display: flex;
   align-items: center;
@@ -177,7 +177,7 @@ button {
   border-radius: 10px;
 }
 
-.select-field__color {
+.selectColor {
   position: absolute;
   left: 14px;
   z-index: 2;
@@ -188,7 +188,7 @@ button {
   pointer-events: none;
 }
 
-.select-field__select {
+.selectInput {
   width: 100%;
   height: 46px;
   padding: 0 65px 0 48px;
@@ -200,14 +200,14 @@ button {
   appearance: none;
 }
 
-.select-field__arrow {
+.selectArrow {
   position: absolute;
   right: 14px;
   font-size: 1rem;
   pointer-events: none;
 }
 
-.custom-flavor__divider {
+.flavorDivider {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -217,25 +217,25 @@ button {
   white-space: nowrap;
 }
 
-.custom-flavor__divider::before,
-.custom-flavor__divider::after {
+.flavorDivider::before,
+.flavorDivider::after {
   height: 1px;
   flex: 1;
   background: #c8c8c8;
   content: "";
 }
 
-.field {
+.inputGroup {
   display: grid;
   gap: 8px;
   margin-top: 14px;
 }
 
-.field__label {
+.iinputLabel {
   font-size: 1rem;
 }
 
-.field__input {
+.input {
   width: 100%;
   height: 46px;
   padding: 0 14px;
@@ -246,14 +246,14 @@ button {
   outline: none;
 }
 
-.field__input:focus,
-.color-picker:focus-within,
-.select-field:focus-within {
+.input:focus,
+.colorPicker:focus-within,
+.selectBox:focus-within {
   border-color: #799848;
   box-shadow: inset 0 0 0 1px #799848;
 }
 
-.color-picker {
+.colorPicker {
   display: flex;
   align-items: center;
   min-height: 46px;
@@ -263,7 +263,7 @@ button {
   border-radius: 10px;
 }
 
-.color-picker__input {
+.colorInput {
   width: 25px;
   height: 25px;
   padding: 0;
@@ -274,25 +274,25 @@ button {
   cursor: pointer;
 }
 
-.color-picker__input::-webkit-color-swatch-wrapper {
+.colorInput::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-.color-picker__input::-webkit-color-swatch {
+.colorInput::-webkit-color-swatch {
   border: 0;
   border-radius: 50%;
 }
 
-.color-picker__value {
+.colorValue {
   margin-left: 10px;
   font-size: 1rem;
 }
 
-.extra-flavor-container {
+.extraFlavor {
   margin-top: 16px;
 }
 
-.add-flavor-button {
+.addFlavorButton {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -307,11 +307,11 @@ button {
   cursor: pointer;
 }
 
-.add-flavor-button:hover {
+.addFlavorButton:hover {
   color: #52723f;
 }
 
-.add-flavor-button__icon {
+.buttonIcon {
   display: grid;
   width: 21px;
   height: 21px;
@@ -322,11 +322,11 @@ button {
   line-height: 1;
 }
 
-.summary-section {
+.summary {
   margin-bottom: 16px;
 }
 
-.summary-row {
+.summaryItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -335,11 +335,11 @@ button {
   font-size: 1rem;
 }
 
-.summary-row strong {
+.summaryItem strong {
   text-align: right;
 }
 
-.panel-footer {
+.sidebarFooter {
   position: sticky;
   bottom: 0;
   padding: 20px 17px;
@@ -347,7 +347,7 @@ button {
   border-top: 3px solid #fdb913;
 }
 
-.order-button {
+.primaryButton {
   width: 100%;
   height: 46px;
   margin: 5px 0;
@@ -365,20 +365,20 @@ button {
     background-color 150ms ease;
 }
 
-.order-button:hover {
+.primaryButton:hover {
   background: #ffca36;
   transform: translateY(-1px);
 }
 
-.error-message {
+.errorMessage {
   color: #b42318;
 }
 
-.extra-flavor-block {
+.extraFlavorBlock {
   padding-top: 4px;
 }
 
-.extra-flavor-container:not([hidden]) {
+.extraFlavor:not([hidden]) {
   display: block;
   margin-top: 16px;
 }
@@ -386,12 +386,12 @@ button {
 #primary-flavor-select-wrapper[hidden],
 #primary-flavor-summary[hidden],
 #primary-custom-flavor[hidden],
-.extra-flavor-container[hidden],
-.summary-row[hidden] {
+.extraFlavor[hidden],
+.summaryItem[hidden] {
   display: none !important;
 }
 
-.selected-flavor-card {
+.flavorCard {
   display: flex;
   align-items: center;
   width: 100%;
@@ -402,7 +402,7 @@ button {
   border-radius: 10px;
 }
 
-.selected-flavor-card__color {
+.flavorColor {
   width: 24px;
   height: 24px;
   flex-shrink: 0;
@@ -410,12 +410,12 @@ button {
   border-radius: 50%;
 }
 
-.selected-flavor-card__name {
+.flavorName {
   margin-left: 10px;
   font-size: 1rem;
 }
 
-.selected-flavor-card__price {
+.flavorPrice {
   margin-left: auto;
   color: #8f8f8f;
   font-size: 0.65rem;
@@ -435,13 +435,13 @@ button {
     height: 60vh;
   }
 
-  .panel {
+  .sidebar {
     min-height: auto;
     border-top: 5px solid #fdb913;
     border-left: 0;
   }
 
-  .panel-footer {
+  .sidebarFooter {
     position: static;
   }
 }
