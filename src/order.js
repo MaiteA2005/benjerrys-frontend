@@ -88,10 +88,10 @@ const calculatePreviewPrice = () => {
 
 if (!configuration) {
     orderApp.innerHTML = `
-        <main class="order-page">
-        <section class="order-empty">
+        <main class="orderPage">
+        <section class="orderEmpty">
             <img
-            class="order-page__logo"
+            class="orderLogo"
             src="${logoImage}"
             alt="Ben & Jerry's"
             />
@@ -106,7 +106,7 @@ if (!configuration) {
             </p>
 
             <a
-            class="order-link-button"
+            class="orderLinkButton"
             href="/"
             >
             Terug naar configurator
@@ -129,56 +129,56 @@ if (!configuration) {
         : "Geen toppings";
 
     orderApp.innerHTML = `
-        <main class="order-page">
-        <section class="order-layout">
-            <div class="order-form-panel">
-            <header class="order-header">
+        <main class="orderPage">
+        <section class="orderLayout">
+            <div class="orderFormSidebar">
+            <header class="orderHeader">
                 <a
-                class="order-back-link"
+                class="orderBackLink"
                 href="/"
                 >
                 ← Terug naar configurator
                 </a>
 
                 <img
-                class="order-page__logo"
+                class="orderLogo"
                 src="${logoImage}"
                 alt="Ben & Jerry's"
                 />
 
-                <p class="order-header__subtitle">
+                <p class="orderSubtitle">
                 Vul je gegevens in
                 </p>
             </header>
 
             <form
-                id="order-form"
-                class="order-form"
+                id="orderForm"
+                class="orderForm"
                 novalidate
             >
-                <h1 class="order-title">
+                <h1 class="orderTitle">
                 Bestel je ijsje
                 </h1>
 
-                <p class="order-intro">
+                <p class="orderIntro">
                 Vul je gegevens in om je
                 bestelling te plaatsen.
                 </p>
 
                 <div
-                id="order-message"
-                class="order-message"
+                id="orderMessage"
+                class="orderMessage"
                 hidden
                 ></div>
 
-                <label class="field">
-                <span class="field__label">
+                <label class="inputGroup">
+                <span class="iinputLabel">
                     Naam
                 </span>
 
                 <input
                     id="customer-name"
-                    class="field__input"
+                    class="input"
                     type="text"
                     autocomplete="name"
                     placeholder="Voor- en achternaam"
@@ -187,19 +187,19 @@ if (!configuration) {
 
                 <span
                     id="customer-name-error"
-                    class="field__error"
+                    class="inputGroupError"
                 ></span>
                 </label>
 
-                <div class="order-form__row">
-                <label class="field">
-                    <span class="field__label">
+                <div class="orderRow">
+                <label class="inputGroup">
+                    <span class="iinputLabel">
                     Straat
                     </span>
 
                     <input
                     id="street"
-                    class="field__input"
+                    class="input"
                     type="text"
                     autocomplete="street-address"
                     placeholder="Straat"
@@ -208,18 +208,18 @@ if (!configuration) {
 
                     <span
                     id="street-error"
-                    class="field__error"
+                    class="inputGroupError"
                     ></span>
                 </label>
 
-                <label class="field">
-                    <span class="field__label">
+                <label class="inputGroup">
+                    <span class="iinputLabel">
                     Huisnummer
                     </span>
 
                     <input
                     id="house-number"
-                    class="field__input"
+                    class="input"
                     type="text"
                     autocomplete="address-line2"
                     placeholder="12"
@@ -228,20 +228,20 @@ if (!configuration) {
 
                     <span
                     id="house-number-error"
-                    class="field__error"
+                    class="inputGroupError"
                     ></span>
                 </label>
                 </div>
 
-                <div class="order-form__row">
-                <label class="field">
-                    <span class="field__label">
+                <div class="orderRow">
+                <label class="inputGroup">
+                    <span class="iinputLabel">
                     Postcode
                     </span>
 
                     <input
                     id="postal-code"
-                    class="field__input"
+                    class="input"
                     type="text"
                     inputmode="numeric"
                     autocomplete="postal-code"
@@ -252,18 +252,18 @@ if (!configuration) {
 
                     <span
                     id="postal-code-error"
-                    class="field__error"
+                    class="inputGroupError"
                     ></span>
                 </label>
 
-                <label class="field">
-                    <span class="field__label">
+                <label class="inputGroup">
+                    <span class="iinputLabel">
                     Gemeente
                     </span>
 
                     <input
                     id="city"
-                    class="field__input"
+                    class="input"
                     type="text"
                     autocomplete="address-level2"
                     placeholder="Mechelen"
@@ -272,14 +272,14 @@ if (!configuration) {
 
                     <span
                     id="city-error"
-                    class="field__error"
+                    class="inputGroupError"
                     ></span>
                 </label>
                 </div>
 
                 <button
-                id="confirm-order-button"
-                class="order-button"
+                id="confirm-primaryButton"
+                class="primaryButton"
                 type="submit"
                 >
                 Bestelling plaatsen
@@ -287,13 +287,13 @@ if (!configuration) {
             </form>
             </div>
 
-            <aside class="order-summary-panel">
-            <div class="order-summary-card">
-                <h2 class="order-summary-card__title">
+            <aside class="orderSummarySidebar">
+            <div class="orderSummaryCard">
+                <h2 class="orderSummaryTitle">
                 Jouw bestelling
                 </h2>
 
-                <div class="order-summary-row">
+                <div class="orderSummaryItem">
                 <span>Basis</span>
 
                 <strong>
@@ -301,7 +301,7 @@ if (!configuration) {
                 </strong>
                 </div>
 
-                <div class="order-summary-row">
+                <div class="orderSummaryItem">
                 <span>Smaak 1</span>
 
                 <strong>
@@ -312,7 +312,7 @@ if (!configuration) {
                 ${
                 extraFlavor
                     ? `
-                    <div class="order-summary-row">
+                    <div class="orderSummaryItem">
                         <span>Smaak 2</span>
 
                         <strong>
@@ -323,7 +323,7 @@ if (!configuration) {
                     : ""
                 }
 
-                <div class="order-summary-row">
+                <div class="orderSummaryItem">
                 <span>Toppings</span>
 
                 <strong>
@@ -333,8 +333,8 @@ if (!configuration) {
 
                 <div
                 class="
-                    order-summary-row
-                    order-summary-row--total
+                    orderSummaryItem
+                    orderSummaryItemTotal
                 "
                 >
                 <span>Totaal</span>
@@ -352,19 +352,19 @@ if (!configuration) {
     `;
 
     const form =
-        document.querySelector("#order-form");
+        document.querySelector("#orderForm");
 
     const orderButton =
         document.querySelector(
-        "#confirm-order-button"
+        "#confirm-primaryButton"
         );
 
     const orderMessage =
         document.querySelector(
-        "#order-message"
+        "#orderMessage"
         );
 
-    const fields = {
+    const inputGroups = {
         customerName:
         document.querySelector(
             "#customer-name"
@@ -421,24 +421,24 @@ if (!configuration) {
         }
         );
 
-        Object.values(fields).forEach(
-        (field) => {
-            field.classList.remove(
-            "field__input--error"
+        Object.values(inputGroups).forEach(
+        (inputGroup) => {
+            inputGroup.classList.remove(
+            "inputError"
             );
         }
         );
     };
 
-    const setFieldError = (
-        fieldName,
+    const setinputGroupError = (
+        inputGroupName,
         message
     ) => {
-        errors[fieldName].textContent =
+        errors[inputGroupName].textContent =
         message;
 
-        fields[fieldName].classList.add(
-        "field__input--error"
+        inputGroups[inputGroupName].classList.add(
+        "inputError"
         );
     };
 
@@ -447,8 +447,8 @@ if (!configuration) {
 
         let isValid = true;
 
-        if (!fields.customerName.value.trim()) {
-        setFieldError(
+        if (!inputGroups.customerName.value.trim()) {
+        setinputGroupError(
             "customerName",
             "Vul je naam in."
         );
@@ -456,8 +456,8 @@ if (!configuration) {
         isValid = false;
         }
 
-        if (!fields.street.value.trim()) {
-        setFieldError(
+        if (!inputGroups.street.value.trim()) {
+        setinputGroupError(
             "street",
             "Vul je straat in."
         );
@@ -466,9 +466,9 @@ if (!configuration) {
         }
 
         if (
-        !fields.houseNumber.value.trim()
+        !inputGroups.houseNumber.value.trim()
         ) {
-        setFieldError(
+        setinputGroupError(
             "houseNumber",
             "Vul je huisnummer in."
         );
@@ -476,8 +476,8 @@ if (!configuration) {
         isValid = false;
         }
 
-        if (!fields.postalCode.value.trim()) {
-        setFieldError(
+        if (!inputGroups.postalCode.value.trim()) {
+        setinputGroupError(
             "postalCode",
             "Vul je postcode in."
         );
@@ -485,8 +485,8 @@ if (!configuration) {
         isValid = false;
         }
 
-        if (!fields.city.value.trim()) {
-        setFieldError(
+        if (!inputGroups.city.value.trim()) {
+        setinputGroupError(
             "city",
             "Vul je gemeente in."
         );
@@ -533,7 +533,7 @@ if (!configuration) {
         orderMessage.hidden = true;
         orderMessage.textContent = "";
         orderMessage.className =
-            "order-message";
+            "orderMessage";
 
         if (!validateForm()) {
             return;
@@ -551,20 +551,20 @@ if (!configuration) {
 
         const orderData = {
             customerName:
-            fields.customerName.value.trim(),
+            inputGroups.customerName.value.trim(),
 
             address: {
             street:
-                fields.street.value.trim(),
+                inputGroups.street.value.trim(),
 
             houseNumber:
-                fields.houseNumber.value.trim(),
+                inputGroups.houseNumber.value.trim(),
 
             postalCode:
-                fields.postalCode.value.trim(),
+                inputGroups.postalCode.value.trim(),
 
             city:
-                fields.city.value.trim()
+                inputGroups.city.value.trim()
             },
 
             iceCreamBase:
@@ -588,8 +588,8 @@ if (!configuration) {
             );
 
             form.innerHTML = `
-            <section class="order-success">
-                <div class="order-success__icon">
+            <section class="orderSuccess">
+                <div class="orderSuccessIcon">
                 ✓
                 </div>
 
@@ -610,7 +610,7 @@ if (!configuration) {
                 </p>
 
                 <a
-                class="order-link-button"
+                class="orderLinkButton"
                 href="/"
                 >
                 Nieuw ijsje maken
@@ -622,7 +622,7 @@ if (!configuration) {
 
             orderMessage.hidden = false;
             orderMessage.classList.add(
-            "order-message--error"
+            "orderMessage--error"
             );
 
             orderMessage.textContent =

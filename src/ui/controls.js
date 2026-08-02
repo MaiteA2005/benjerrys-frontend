@@ -20,7 +20,7 @@ export const createBaseControls = ({
     selectedBase,
     onBaseChange
     }) => {
-    const controls = document.querySelector("#base-options");
+    const controls = document.querySelector("#baseList");
 
     if (!controls) {
         return;
@@ -32,38 +32,38 @@ export const createBaseControls = ({
         const button = document.createElement("button");
 
         button.type = "button";
-        button.className = "base-option";
+        button.className = "baseOption";
         button.dataset.baseId = base._id;
 
         if (base._id === selectedBase?._id) {
-        button.classList.add("base-option--active");
+        button.classList.add("baseOptionActive");
         }
 
         button.innerHTML = `
-        <span class="base-option__name">
+        <span class="baseOptionName">
             ${base.name}
         </span>
 
-        <span class="base-option__price">
+        <span class="baseOptionPrice">
             ${formatPrice(base.price)}
         </span>
         `;
 
         button.addEventListener("click", async () => {
         controls
-            .querySelectorAll(".base-option")
+            .querySelectorAll(".baseOption")
             .forEach((item) => {
-            item.classList.remove("base-option--active");
+            item.classList.remove("baseOptionActive");
             });
 
-        button.classList.add("base-option--active");
+        button.classList.add("baseOptionActive");
 
         try {
             button.disabled = true;
             await onBaseChange(base);
         } catch (error) {
             console.error(error);
-            button.classList.remove("base-option--active");
+            button.classList.remove("baseOptionActive");
         } finally {
             button.disabled = false;
         }
@@ -236,11 +236,11 @@ export const createExtraFlavorControls = ({
     onRemoveFlavor
     }) => {
     const addButton = document.querySelector(
-        "#add-flavor-button"
+        "#addFlavorButton"
     );
 
     const extraContainer = document.querySelector(
-        "#extra-flavor-container"
+        "#extraFlavor"
     );
 
     const primaryFlavorLabel = document.querySelector(
@@ -381,7 +381,7 @@ export const createExtraFlavorControls = ({
             }
 
             addButton.innerHTML = `
-            <span class="add-flavor-button__icon">
+            <span class="buttonIcon">
                 +
             </span>
 
@@ -414,65 +414,65 @@ export const createExtraFlavorControls = ({
         }
 
         extraContainer.innerHTML = `
-            <div class="extra-flavor-block">
-            <label class="field">
-                <span class="field__label">
+            <div class="extraFlavorBlock">
+            <label class="inputGroup">
+                <span class="iinputLabel">
                 Kies je 2de smaak
                 </span>
 
-                <div class="select-field">
+                <div class="selectBox">
                 <span
                     id="extra-flavor-color-preview"
-                    class="select-field__color"
+                    class="selectColor"
                 ></span>
 
                 <select
                     id="extra-flavor-select"
-                    class="select-field__select"
+                    class="selectInput"
                 ></select>
 
-                <span class="select-field__arrow">
+                <span class="selectArrow">
                     ⌄
                 </span>
                 </div>
             </label>
 
-            <div class="custom-flavor__divider">
+            <div class="flavorDivider">
                 <span>
                 Of kies je eigen smaak
                 </span>
             </div>
 
-            <label class="field">
-                <span class="field__label">
+            <label class="inputGroup">
+                <span class="iinputLabel">
                 Naam
                 </span>
 
                 <input
                 id="extra-custom-flavor-name"
-                class="field__input"
+                class="input"
                 type="text"
                 maxlength="40"
                 placeholder="Naam"
                 />
             </label>
 
-            <label class="field">
-                <span class="field__label">
+            <label class="inputGroup">
+                <span class="iinputLabel">
                 Kies je kleur
                 </span>
 
-                <div class="color-picker">
+                <div class="colorPicker">
                 <input
                     id="extra-custom-flavor-color"
-                    class="color-picker__input"
+                    class="colorInput"
                     type="color"
                     value="#edb8cc"
                 />
 
                 <span
                     id="extra-custom-flavor-color-value"
-                    class="color-picker__value"
+                    class="colorValue"
                 >
                     #EDB8CC
                 </span>
@@ -554,7 +554,7 @@ export const createExtraFlavorControls = ({
         );
 
         addButton.innerHTML = `
-            <span class="add-flavor-button__icon">
+            <span class="buttonIcon">
             −
             </span>
 

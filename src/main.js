@@ -59,66 +59,66 @@ app.innerHTML = `
       <div id="three-container"></div>
     </section>
 
-    <aside class="panel">
-      <header class="panel-header">
+    <aside class="sidebar">
+      <header class="sidebarHeader">
         <img
-          class="panel-header__logo"
+          class="sidebarLogo"
           src="${logoImage}"
           alt="Ben & Jerry's"
         />
 
-        <p class="panel-header__subtitle">
+        <p class="sidebarSubtitle">
           Ice cream factory
         </p>
       </header>
 
-      <div class="panel-content">
-        <section class="configuration-section">
-          <h2 class="step-title">
+      <div class="sidebarContent">
+        <section class="step">
+          <h2 class="stepTitle">
             Stap 1
           </h2>
 
-          <p class="step-description">
+          <p class="stepText">
             Kies je basis
           </p>
 
           <div
-            id="base-options"
-            class="base-options"
+            id="baseList"
+            class="baseList"
           >
             <p>Opties laden...</p>
           </div>
         </section>
 
-        <section class="configuration-section">
-          <h2 class="step-title">
+        <section class="step">
+          <h2 class="stepTitle">
             Stap 2
           </h2>
 
           <p
             id="primary-flavor-label"
-            class="step-description"
+            class="stepText"
           >
             Kies je smaak
           </p>
 
           <div id="primary-flavor-select-wrapper">
-            <div class="select-field">
+            <div class="selectBox">
               <span
                 id="selected-flavor-color-preview"
-                class="select-field__color"
+                class="selectColor"
               ></span>
 
               <select
                 id="flavor-select"
-                class="select-field__select"
+                class="selectInput"
               >
                 <option>
                   Smaken laden...
                 </option>
               </select>
 
-              <span class="select-field__arrow">
+              <span class="selectArrow">
                 ⌄
               </span>
             </div>
@@ -126,64 +126,64 @@ app.innerHTML = `
 
           <div
             id="primary-flavor-summary"
-            class="selected-flavor-card"
+            class="flavorCard"
             hidden
           >
             <span
               id="primary-flavor-summary-color"
-              class="selected-flavor-card__color"
+              class="flavorColor"
             ></span>
 
             <span
               id="primary-flavor-summary-name"
-              class="selected-flavor-card__name"
+              class="flavorName"
             >
               Nog niet gekozen
             </span>
 
             <span
               id="primary-flavor-summary-price"
-              class="selected-flavor-card__price"
+              class="flavorPrice"
             ></span>
           </div>
 
           <div id="primary-custom-flavor">
-            <div class="custom-flavor__divider">
+            <div class="flavorDivider">
               <span>
                 Of kies je eigen smaak
               </span>
             </div>
 
-            <label class="field">
-              <span class="field__label">
+            <label class="inputGroup">
+              <span class="iinputLabel">
                 Naam
               </span>
 
               <input
                 id="custom-flavor-name"
-                class="field__input"
+                class="input"
                 type="text"
                 maxlength="40"
                 placeholder="Naam"
               />
             </label>
 
-            <label class="field">
-              <span class="field__label">
+            <label class="inputGroup">
+              <span class="iinputLabel">
                 Kies je kleur
               </span>
 
-              <div class="color-picker">
+              <div class="colorPicker">
                 <input
                   id="custom-flavor-color"
-                  class="color-picker__input"
+                  class="colorInput"
                   type="color"
                   value="#edb8cc"
                 />
 
                 <span
                   id="custom-flavor-color-value"
-                  class="color-picker__value"
+                  class="colorValue"
                 >
                   #EDB8CC
                 </span>
@@ -192,17 +192,17 @@ app.innerHTML = `
           </div>
 
           <div
-            id="extra-flavor-container"
-            class="extra-flavor-container"
+            id="extraFlavor"
+            class="extraFlavor"
             hidden
           ></div>
 
           <button
-            id="add-flavor-button"
-            class="add-flavor-button"
+            id="addFlavorButton"
+            class="addFlavorButton"
             type="button"
           >
-            <span class="add-flavor-button__icon">
+            <span class="buttonIcon">
               +
             </span>
 
@@ -210,31 +210,31 @@ app.innerHTML = `
           </button>
         </section>
 
-        <section class="configuration-section">
-          <h2 class="step-title">
+        <section class="step">
+          <h2 class="stepTitle">
             Stap 3
           </h2>
 
-          <p class="step-description">
+          <p class="stepText">
             Kies je topping
           </p>
 
-          <div class="select-field">
+          <div class="selectBox">
             <span
               id="selected-topping-color-preview"
-              class="select-field__color"
+              class="selectColor"
             ></span>
 
             <select
               id="topping-select"
-              class="select-field__select"
+              class="selectInput"
             >
               <option>
                 Toppings laden...
               </option>
             </select>
 
-            <span class="select-field__arrow">
+            <span class="selectArrow">
               ⌄
             </span>
           </div>
@@ -242,15 +242,15 @@ app.innerHTML = `
 
         <section
           class="
-            configuration-section
-            summary-section
+            step
+            summary
           "
         >
-          <h2 class="step-title">
+          <h2 class="stepTitle">
             Jouw ijsje
           </h2>
 
-          <div class="summary-row">
+          <div class="summaryItem">
             <span>
               Gekozen basis
             </span>
@@ -260,7 +260,7 @@ app.innerHTML = `
             </strong>
           </div>
 
-          <div class="summary-row">
+          <div class="summaryItem">
             <span>
               Gekozen smaak
             </span>
@@ -272,7 +272,7 @@ app.innerHTML = `
 
           <div
             id="extra-flavor-summary"
-            class="summary-row"
+            class="summaryItem"
             hidden
           >
             <span>
@@ -282,7 +282,7 @@ app.innerHTML = `
             <strong id="extra-flavor-name"></strong>
           </div>
 
-          <div class="summary-row">
+          <div class="summaryItem">
             <span>
               Gekozen topping
             </span>
@@ -294,10 +294,10 @@ app.innerHTML = `
         </section>
       </div>
 
-      <footer class="panel-footer">
+      <footer class="sidebarFooter">
         <button
-          id="order-button"
-          class="order-button"
+          id="primaryButton"
+          class="primaryButton"
           type="button"
         >
           Bestel nu
@@ -642,12 +642,12 @@ const loadConfigurator = async () => {
 
     const baseOptions =
       document.querySelector(
-        "#base-options"
+        "#baseList"
       );
 
     if (baseOptions) {
       baseOptions.innerHTML = `
-        <p class="error-message">
+        <p class="errorMessage">
           De opties konden niet geladen worden.
         </p>
       `;
@@ -672,7 +672,7 @@ const loadConfigurator = async () => {
 
 const orderButton =
   document.querySelector(
-    "#order-button"
+    "#primaryButton"
   );
 
 orderButton.addEventListener(
