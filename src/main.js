@@ -716,14 +716,12 @@ orderButton.addEventListener(
       flavors:
         selectedFlavors,
 
-      toppings: [
+      toppings:
         configuratorState.selectedTopping
-          ? [
-              configuratorState
-                .selectedTopping
+            ? [
+                configuratorState.selectedTopping
             ]
-          : []
-        ]
+            : []
     };
 
     localStorage.setItem(
